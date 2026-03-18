@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nic's Dad Scrapbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── LIGHT THEME (default) ── */
+  :root {
+    --bg:         #d9cdb8;
+    --card-bg:    #fdf8f0;
+    --ink:        #2c1f0e;
+    --body-text:  #4a3520;
+    --brown:      #7a5c3a;
+    --rust:       #c05c2a;
+    --sage:       #6b7c5c;
+    --dusty-blue: #5a7080;
+    --tape:       rgba(200, 180, 130, 0.45);
+    --shadow:     rgba(44, 31, 14, 0.12);
+    --corner:     #d9cdb8;
+    --input-bg:   #f5efe3;
+    --input-border: #d9cdb8;
+    --filter-bg:  rgba(253,248,240,0.75);
+  }
+
+  /* ── DARK THEME ── */
+  [data-theme="dark"] {
+    --bg:         #1a1410;
+    --card-bg:    #241c14;
+    --ink:        #e8d9c0;
+    --body-text:  #c4a87a;
+    --brown:      #b8956a;
+    --rust:       #d4703a;
+    --sage:       #7a9068;
+    --dusty-blue: #6a8898;
+    --tape:       rgba(160, 130, 80, 0.3);
+    --shadow:     rgba(0, 0, 0, 0.45);
+    --corner:     #1a1410;
+    --input-bg:   #1e1810;
+    --input-border: #3a2e20;
+    --filter-bg:  rgba(36,28,20,0.85);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg);
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8a98a' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    padding: 40px 20px 80px;
+    transition: background-color 0.3s;
+  }
+
+  /* ── HEADER ── */
+  header { text-align: center; margin-bottom: 60px; }
+
+  .header-card {
+    display: inline-block;
+    background: var(--card-bg);
+    padding: 36px 56px 32px;
+    border-radius: 2px;
+    box-shadow: 4px 6px 24px var(--shadow), 0 1px 3px rgba(0,0,0,0.08);
+    position: relative;
+    transform: rotate(-0.5deg);
+    transition: background-color 0.3s;
+  }
+
+  .header-card::before {
+    content: '';
+    position: absolute;
+    top: -14px; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 28px;
+    background: var(--tape);
+    border-radius: 1px;
+  }
+
+  .header-label {
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    color: var(--brown);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--ink);
+    font-weight: 700;
+    line-height: 1.15;
+    transition: color 0.3s;
+  }
+
+  h1 em { font-style: italic; color: var(--rust); }
+
+  .header-sub {
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: var(--brown);
+    margin-top: 10px;
+    opacity: 0.75;
+  }
+
+  .header-meta {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-count {
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    color: var(--brown);
+    opacity: 0.7;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    max-width: 1100px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-right { margin-left: auto; }
+
+  .theme-toggle {
+    background: var(--card-bg);
+    border: 1.5px solid var(--input-border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    color: var(--brown);
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .theme-toggle:hover { opacity: 0.8; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    max-width: 1100px;
+    margin: 0 auto 36px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    color: var(--brown);
+    opacity: 0.6;
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--input-border);
+    background: var(--filter-bg);
+    color: var(--brown);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { opacity: 0.75; }
+  .filter-btn.active { background: var(--rust); color: #fdf8f0; border-color: var(--rust); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    letter-spacing: 1px;
+    padding: 8px 20px;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: var(--rust); color: #fdf8f0; }
+  .btn-auth    { background: var(--sage); color: #fdf8f0; }
+  .btn-cancel  { background: var(--input-bg); color: var(--brown); }
+  .btn-save    { background: var(--rust); color: #fdf8f0; }
+  .btn-danger  { background: #c03a2a; color: #fdf8f0; }
+
+  .auth-status { font-family: 'Caveat', cursive; font-size: 15px; color: var(--sage); opacity: 0.85; }
+  .auth-status.unauthed { color: var(--brown); opacity: 0.5; }
+
+  /* ── GRID ── */
+  .scrapbook {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 48px 36px;
+    align-items: start;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card-bg);
+    border-radius: 2px;
+    padding: 32px 28px 28px;
+    box-shadow: 3px 5px 20px var(--shadow);
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.3s;
+  }
+  .card:hover {
+    transform: translateY(-4px) rotate(0deg) !important;
+    box-shadow: 6px 12px 32px rgba(0,0,0,0.22);
+  }
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 0 0 18px 18px;
+    border-color: transparent transparent var(--corner) transparent;
+    opacity: 0.6;
+  }
+  .card.hidden { display: none; }
+
+  .card-accent { width: 36px; height: 4px; border-radius: 2px; margin-bottom: 16px; }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.3;
+    transition: color 0.3s;
+  }
+
+  .card-points { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+  .card-points li {
+    font-size: 0.88rem;
+    color: var(--body-text);
+    line-height: 1.6;
+    padding-left: 18px;
+    position: relative;
+    font-weight: 300;
+    transition: color 0.3s;
+  }
+  .card-points li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--brown);
+    opacity: 0.6;
+    font-size: 0.8rem;
+    top: 1px;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-family: 'Caveat', cursive;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+    opacity: 0.8;
+  }
+
+  .card-date { font-family: 'Caveat', cursive; font-size: 13px; color: var(--brown); opacity: 0.5; }
+
+  .card-actions { display: none; position: absolute; top: 10px; right: 10px; gap: 6px; }
+  .card-actions.visible { display: flex; }
+  .card-btn {
+    font-family: 'Caveat', cursive;
+    font-size: 13px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+  .card-btn:hover { opacity: 1; }
+  .card-btn.edit   { background: #d8e5ec; color: #5a7080; }
+  .card-btn.delete { background: #f0ddd1; color: #c05c2a; }
+
+  /* ── FOOTER ── */
+  .footer-note {
+    text-align: center;
+    margin-top: 70px;
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    color: var(--brown);
+    opacity: 0.6;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 6, 2, 0.65);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--card-bg);
+    border-radius: 2px;
+    padding: 36px;
+    width: 100%;
+    max-width: 540px;
+    box-shadow: 6px 10px 40px rgba(0,0,0,0.35);
+    max-height: 90vh;
+    overflow-y: auto;
+    transition: background-color 0.3s;
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: var(--brown);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--input-border);
+    border-radius: 2px;
+    background: var(--input-bg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, background 0.3s, color 0.3s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237a5c3a' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--brown); }
+  .form-group textarea { min-height: 120px; resize: vertical; }
+  .form-group input[readonly] { opacity: 0.65; cursor: default; }
+
+  .form-hint { font-size: 0.78rem; color: var(--brown); opacity: 0.55; margin-top: 4px; }
+
+  .custom-tag-row { display: none; margin-top: 8px; }
+  .custom-tag-row.visible { display: block; }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+
+  .status-msg {
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    padding: 8px 14px;
+    border-radius: 2px;
+    margin-top: 12px;
+    display: none;
+  }
+  .status-msg.success { background: #dce4d6; color: var(--sage); display: block; }
+  .status-msg.error   { background: #f0ddd1; color: var(--rust); display: block; }
+
+  .no-results {
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    color: var(--brown);
+    opacity: 0.5;
+    text-align: center;
+    padding: 40px;
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 680px) {
+    .scrapbook { grid-template-columns: 1fr; gap: 48px; }
+    .header-card { padding: 28px 32px; }
+    .toolbar { justify-content: center; }
+    .toolbar-right { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-card">
+    <div class="header-label">A collection of things worth remembering</div>
+    <h1>Notes on being<br><em>a good dad</em></h1>
+    <div class="header-sub">started when the test came back positive ✦ 2026</div>
+    <div class="header-meta">
+      <span class="card-count" id="cardCount"></span>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="btn btn-auth" onclick="openAuthModal()">🔑 Authenticate</button>
+  <span class="auth-status unauthed" id="authStatus">Not authenticated</span>
+  <button class="btn btn-primary" id="addBtn" onclick="openAddModal()" style="display:none">+ Add Note</button>
+  <div class="toolbar-right">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙 Dark</button>
+  </div>
+</div>
+
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" data-tag="all" onclick="setFilter('all')">All</button>
+</div>
+
+<div class="scrapbook" id="scrapbook"></div>
+<div class="footer-note" id="footerNote"></div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-title">Authenticate</div>
+    <div class="form-group">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="tokenInput" placeholder="ghp_..." />
+      <div class="form-hint">Needs Contents read/write on Dad-Scrapbook. Stored in sessionStorage only.</div>
+    </div>
+    <div id="authStatus2" class="status-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('authModal')">Cancel</button>
+      <button class="btn btn-save" onclick="authenticate()">Authenticate</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-overlay" id="cardModal">
+  <div class="modal">
+    <div class="modal-title" id="cardModalTitle">Add Note</div>
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" id="fTitle" placeholder="e.g. The 20-Second Hug" />
+    </div>
+    <div class="form-group">
+      <label>Bullet Points</label>
+      <textarea id="fPoints" placeholder="One point per line"></textarea>
+      <div class="form-hint">One point per line.</div>
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="fTag" onchange="handleTagChange()"></select>
+      <div class="custom-tag-row" id="customTagRow">
+        <input type="text" id="fTagCustom" placeholder="Enter new category name" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="text" id="fDate" readonly />
+      <div class="form-hint">Automatically set to today.</div>
+    </div>
+    <div id="cardStatus" class="status-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('cardModal')">Cancel</button>
+      <button class="btn btn-save" onclick="saveCard()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-title">Delete this note?</div>
+    <p style="font-size:0.9rem;color:var(--brown);margin-bottom:8px;">This can't be undone.</p>
+    <div id="deleteStatus" class="status-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const OWNER = 'Nic-St';
+  const REPO  = 'Dad-Scrapbook';
+  const FILE  = 'data.json';
+  const API   = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`;
+
+  const TAG_COLOURS_LIGHT = [
+    { bg: '#f0ddd1', fg: '#c05c2a' },
+    { bg: '#d8e5ec', fg: '#5a7080' },
+    { bg: '#dce4d6', fg: '#6b7c5c' },
+    { bg: '#ecddd0', fg: '#7a5c3a' },
+    { bg: '#e8dce8', fg: '#7a5a7a' },
+    { bg: '#dceae0', fg: '#4a7a5c' },
+  ];
+
+  const TAG_COLOURS_DARK = [
+    { bg: '#3a2010', fg: '#d47050' },
+    { bg: '#182030', fg: '#7aaabe' },
+    { bg: '#182418', fg: '#8ab088' },
+    { bg: '#2a1e10', fg: '#c0956a' },
+    { bg: '#281828', fg: '#b08ab0' },
+    { bg: '#182820', fg: '#68a880' },
+  ];
+
+  const ROTATIONS = [-1.2, 0.8, -0.5, 1.0, -0.8, 0.6, -1.0, 0.4];
+  const TAPE_LEFT = ['50%', '30%', '65%', '40%', '55%', '35%', '60%', '45%'];
+  const TAPE_ROT  = [0, -3, 2, -2, 1, -4, 3, -1];
+
+  const BASE_CATEGORIES = ['Connection','Safety','Temperament','Dad Hacks','Milestones','Health'];
+
+  let cards        = [];
+  let fileSha      = '';
+  let editingId    = null;
+  let deletingId   = null;
+  let authed       = false;
+  let activeFilter = 'all';
+  let darkMode     = false;
+
+  // ── THEME ──
+  function initTheme() {
+    const stored = localStorage.getItem('scrapbook_theme');
+    darkMode = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!localStorage.getItem('scrapbook_theme')) { darkMode = e.matches; applyTheme(); render(); }
+    });
+  }
+
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    document.getElementById('themeToggle').textContent = darkMode ? '☀️ Light' : '🌙 Dark';
+  }
+
+  function toggleTheme() {
+    darkMode = !darkMode;
+    localStorage.setItem('scrapbook_theme', darkMode ? 'dark' : 'light');
+    applyTheme();
+    render();
+  }
+
+  // ── INIT ──
+  async function init() {
+    initTheme();
+    await loadCards();
+  }
+
+  async function loadCards() {
+    try {
+      const headers = { 'Accept': 'application/vnd.github.v3+json' };
+      const token = sessionStorage.getItem('gh_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res  = await fetch(API, { headers });
+      const json = await res.json();
+      fileSha = json.sha;
+      cards   = JSON.parse(atob(json.content.replace(/\n/g, '')));
+      render();
+    } catch(e) {
+      document.getElementById('scrapbook').innerHTML =
+        '<p style="font-family:\'Caveat\',cursive;color:var(--brown);opacity:0.7;padding:20px;">Could not load notes.</p>';
+    }
+  }
+
+  // ── FILTER ──
+  function buildFilterBar() {
+    const tags = ['all', ...new Set(cards.map(c => c.tag))];
+    const bar  = document.getElementById('filterBar');
+    bar.innerHTML = '<span class="filter-label">Filter:</span>';
+    tags.forEach(tag => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn' + (tag === activeFilter ? ' active' : '');
+      btn.dataset.tag = tag;
+      btn.textContent = tag === 'all' ? 'All' : tag;
+      btn.onclick = () => setFilter(tag);
+      bar.appendChild(btn);
+    });
+  }
+
+  function setFilter(tag) {
+    activeFilter = tag;
+    document.querySelectorAll('.filter-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.tag === tag)
+    );
+    applyFilter();
+  }
+
+  function applyFilter() {
+    const grid = document.getElementById('scrapbook');
+    grid.querySelectorAll('.card').forEach(el =>
+      el.classList.toggle('hidden', activeFilter !== 'all' && el.dataset.tag !== activeFilter)
+    );
+    const existing   = grid.querySelector('.no-results');
+    const anyVisible = [...grid.querySelectorAll('.card')].some(c => !c.classList.contains('hidden'));
+    if (!anyVisible && !existing) {
+      const p = document.createElement('p');
+      p.className = 'no-results';
+      p.textContent = 'No notes in this category yet.';
+      grid.appendChild(p);
+    } else if (anyVisible && existing) {
+      existing.remove();
+    }
+  }
+
+  // ── RENDER ──
+  function render() {
+    const grid    = document.getElementById('scrapbook');
+    const colours = darkMode ? TAG_COLOURS_DARK : TAG_COLOURS_LIGHT;
+    grid.innerHTML = '';
+
+    cards.forEach((card, i) => {
+      const col      = colours[i % colours.length];
+      const rot      = ROTATIONS[i % ROTATIONS.length];
+      const tapeLeft = TAPE_LEFT[i % TAPE_LEFT.length];
+      const tapeRot  = TAPE_ROT[i % TAPE_ROT.length];
+      const hidden   = (activeFilter !== 'all' && card.tag !== activeFilter) ? ' hidden' : '';
+
+      const el = document.createElement('div');
+      el.className  = 'card' + hidden;
+      el.dataset.tag = card.tag;
+      el.style.transform = `rotate(${rot}deg)`;
+      el.innerHTML = `
+        <div class="card-actions${authed ? ' visible' : ''}">
+          <button class="card-btn edit" onclick="openEditModal(${card.id})">Edit</button>
+          <button class="card-btn delete" onclick="openDeleteModal(${card.id})">Delete</button>
+        </div>
+        <div style="position:absolute;top:-12px;left:${tapeLeft};transform:translateX(-50%) rotate(${tapeRot}deg);width:70px;height:24px;background:var(--tape);border-radius:1px;pointer-events:none;"></div>
+        <div class="card-accent" style="background:${col.fg};"></div>
+        <div class="card-title">${escHtml(card.title)}</div>
+        <ul class="card-points">${card.points.map(p => `<li>${escHtml(p)}</li>`).join('')}</ul>
+        <div class="card-footer">
+          <span class="card-tag" style="background:${col.bg};color:${col.fg};">${escHtml(card.tag)}</span>
+          <span class="card-date">${escHtml(card.date)}</span>
+        </div>
+      `;
+      grid.appendChild(el);
+    });
+
+    const n = cards.length;
+    document.getElementById('cardCount').textContent =
+      n === 0 ? '' : `${n} thing${n !== 1 ? 's' : ''} collected so far`;
+    document.getElementById('footerNote').textContent =
+      n > 0 ? 'more to come — this is just the beginning ✦' : '';
+
+    buildFilterBar();
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── AUTH ──
+  function openAuthModal() {
+    document.getElementById('tokenInput').value = sessionStorage.getItem('gh_token') || '';
+    showStatus('authStatus2','','');
+    openModal('authModal');
+  }
+
+  async function authenticate() {
+    const token = document.getElementById('tokenInput').value.trim();
+    if (!token) return showStatus('authStatus2','error','Please enter a token.');
+    showStatus('authStatus2','','Checking…');
+    try {
+      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Invalid token or no repo access.');
+      sessionStorage.setItem('gh_token', token);
+      authed = true;
+      document.getElementById('authStatus').textContent = '✓ Authenticated';
+      document.getElementById('authStatus').className = 'auth-status';
+      document.getElementById('addBtn').style.display = 'inline-block';
+      closeModal('authModal');
+      render();
+    } catch(e) {
+      showStatus('authStatus2','error', e.message);
+    }
+  }
+
+  // ── CATEGORY DROPDOWN ──
+  function buildTagOptions(selected) {
+    const cardTags = cards.map(c => c.tag);
+    const allTags  = [...new Set([...BASE_CATEGORIES, ...cardTags])];
+    const sel      = document.getElementById('fTag');
+    sel.innerHTML  = '<option value="">Select a category…</option>';
+    allTags.forEach(t => {
+      const o = document.createElement('option');
+      o.value = t; o.textContent = t;
+      if (t === selected) o.selected = true;
+      sel.appendChild(o);
+    });
+    const c = document.createElement('option');
+    c.value = '__custom__'; c.textContent = '+ Add new category…';
+    sel.appendChild(c);
+  }
+
+  function handleTagChange() {
+    const isCustom = document.getElementById('fTag').value === '__custom__';
+    document.getElementById('customTagRow').classList.toggle('visible', isCustom);
+    if (isCustom) document.getElementById('fTagCustom').focus();
+  }
+
+  // ── ADD / EDIT ──
+  function openAddModal() {
+    editingId = null;
+    document.getElementById('cardModalTitle').textContent = 'Add Note';
+    document.getElementById('fTitle').value  = '';
+    document.getElementById('fPoints').value = '';
+    document.getElementById('fDate').value   = todayStr();
+    document.getElementById('fTagCustom').value = '';
+    document.getElementById('customTagRow').classList.remove('visible');
+    buildTagOptions('');
+    showStatus('cardStatus','','');
+    openModal('cardModal');
+  }
+
+  function openEditModal(id) {
+    const card = cards.find(c => c.id === id);
+    if (!card) return;
+    editingId = id;
+    document.getElementById('cardModalTitle').textContent = 'Edit Note';
+    document.getElementById('fTitle').value  = card.title;
+    document.getElementById('fPoints').value = card.points.join('\n');
+    document.getElementById('fDate').value   = card.date;
+    document.getElementById('fTagCustom').value = '';
+    document.getElementById('customTagRow').classList.remove('visible');
+    buildTagOptions(card.tag);
+    showStatus('cardStatus','','');
+    openModal('cardModal');
+  }
+
+  async function saveCard() {
+    const title  = document.getElementById('fTitle').value.trim();
+    const points = document.getElementById('fPoints').value.split('\n').map(l => l.trim()).filter(Boolean);
+    const date   = document.getElementById('fDate').value.trim();
+    let tag      = document.getElementById('fTag').value;
+    if (tag === '__custom__') tag = document.getElementById('fTagCustom').value.trim();
+
+    if (!title || !points.length || !tag || !date)
+      return showStatus('cardStatus','error','Please fill in all fields.');
+
+    showStatus('cardStatus','','Saving…');
+
+    if (editingId !== null) {
+      const idx = cards.findIndex(c => c.id === editingId);
+      if (idx !== -1) cards[idx] = { ...cards[idx], title, points, tag, date };
+    } else {
+      const newId = cards.length > 0 ? Math.max(...cards.map(c => c.id)) + 1 : 1;
+      cards.push({ id: newId, title, points, tag, date });
+    }
+
+    const ok = await commitCards('cardStatus');
+    if (ok) { activeFilter = 'all'; closeModal('cardModal'); }
+  }
+
+  // ── DELETE ──
+  function openDeleteModal(id) {
+    deletingId = id;
+    showStatus('deleteStatus','','');
+    openModal('deleteModal');
+  }
+
+  async function confirmDelete() {
+    showStatus('deleteStatus','','Deleting…');
+    cards = cards.filter(c => c.id !== deletingId);
+    const ok = await commitCards('deleteStatus');
+    if (ok) closeModal('deleteModal');
+  }
+
+  // ── GITHUB COMMIT ──
+  async function commitCards(statusEl) {
+    const token = sessionStorage.getItem('gh_token');
+    try {
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(cards, null, 2))));
+      const res = await fetch(API, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Update scrapbook notes', content, sha: fileSha })
+      });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Commit failed.'); }
+      const data = await res.json();
+      fileSha = data.content.sha;
+      render();
+      return true;
+    } catch(e) {
+      showStatus(statusEl,'error', e.message);
+      return false;
+    }
+  }
+
+  // ── UTILS ──
+  function openModal(id)  { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  function showStatus(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className   = 'status-msg' + (type ? ' ' + type : '');
+    el.textContent = msg;
+    if (!type) el.style.display = msg ? 'block' : 'none';
+  }
+
+  function todayStr() {
+    return new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  document.querySelectorAll('.modal-overlay').forEach(o =>
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
+  );
+
+  init();
+</script>
+</body>
+</html>
