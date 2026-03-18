@@ -197,6 +197,7 @@
   .btn-cancel  { background: var(--input-bg); color: var(--brown); }
   .btn-save    { background: var(--rust); color: #fdf8f0; }
   .btn-danger  { background: #c03a2a; color: #fdf8f0; }
+  .btn-ai      { background: var(--dusty-blue); color: #fdf8f0; }
 
   .auth-status { font-family: 'Caveat', cursive; font-size: 15px; color: var(--sage); opacity: 0.85; }
   .auth-status.unauthed { color: var(--brown); opacity: 0.5; }
@@ -259,7 +260,7 @@
     transition: color 0.3s;
   }
   .card-points li::before {
-    content: '—';
+    content: '\2014';
     position: absolute;
     left: 0;
     color: var(--brown);
@@ -461,60 +462,6 @@
   }
   .drop-preview.visible { display: block; margin: 12px auto 0; }
 
-  .btn-ai { background: var(--dusty-blue); color: #fdf8f0; }
-  .btn-editor { background: var(--brown); color: #fdf8f0; }
-
-  /* ── PAGE EDITOR ── */
-  .editor-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: var(--bg);
-    flex-direction: column;
-  }
-  .editor-overlay.open { display: flex; }
-
-  .editor-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    background: var(--card-bg);
-    border-bottom: 1.5px solid var(--input-border);
-    flex-shrink: 0;
-  }
-
-  .editor-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    color: var(--ink);
-    margin-right: auto;
-  }
-
-  .editor-status {
-    font-family: 'Caveat', cursive;
-    font-size: 14px;
-    color: var(--brown);
-    opacity: 0.65;
-  }
-
-  .editor-textarea {
-    flex: 1;
-    width: 100%;
-    padding: 20px;
-    border: none;
-    outline: none;
-    resize: none;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 13px;
-    line-height: 1.6;
-    background: var(--input-bg);
-    color: var(--ink);
-    tab-size: 2;
-    transition: background 0.3s, color 0.3s;
-  }
-
   @media (max-width: 680px) {
     .scrapbook { grid-template-columns: 1fr; gap: 48px; }
     .header-card { padding: 28px 32px; }
@@ -529,7 +476,7 @@
   <div class="header-card">
     <div class="header-label">A collection of things worth remembering</div>
     <h1>Notes on being<br><em>a good dad</em></h1>
-    <div class="header-sub">started when the test came back positive ✦ 2026</div>
+    <div class="header-sub">started when the test came back positive &#x2756; 2026</div>
     <div class="header-meta">
       <span class="card-count" id="cardCount"></span>
     </div>
@@ -537,13 +484,12 @@
 </header>
 
 <div class="toolbar">
-  <button class="btn btn-auth" onclick="openAuthModal()">🔑 Authenticate</button>
+  <button class="btn btn-auth" onclick="openAuthModal()">&#x1F511; Authenticate</button>
   <span class="auth-status unauthed" id="authStatus">Not authenticated</span>
   <button class="btn btn-primary" id="addBtn" onclick="openAddModal()" style="display:none">+ Add Note</button>
-  <button class="btn btn-ai" id="screenshotBtn" onclick="openScreenshotModal()" style="display:none">📷 From Screenshot</button>
-  <button class="btn btn-editor" id="editorBtn" onclick="openPageEditor()" style="display:none">✏️ Edit Page</button>
+  <button class="btn btn-ai" id="screenshotBtn" onclick="openScreenshotModal()" style="display:none">&#x1F4F7; From Screenshot</button>
   <div class="toolbar-right">
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙 Dark</button>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">&#x1F319; Dark</button>
   </div>
 </div>
 
@@ -565,7 +511,7 @@
       <div class="form-hint">Needs Contents read/write on Dad-Scrapbook. Stored in sessionStorage only.</div>
     </div>
     <div class="form-group">
-      <label>Anthropic API Key <span style="opacity:0.5;font-size:12px;">(optional — for screenshot feature)</span></label>
+      <label>Anthropic API Key <span style="opacity:0.5;font-size:12px;">(optional &#x2014; for screenshot feature)</span></label>
       <input type="password" id="anthropicKeyInput" placeholder="sk-ant-..." />
       <div class="form-hint">Only needed for the "From Screenshot" feature. Stored in sessionStorage only.</div>
     </div>
@@ -585,7 +531,7 @@
       <label>Drop or select a screenshot</label>
       <div class="drop-zone" id="dropZone">
         <input type="file" id="screenshotFile" accept="image/*" onchange="handleFileSelect(event)" />
-        <div class="drop-zone-label">📷 Drop image here or click to browse</div>
+        <div class="drop-zone-label">&#x1F4F7; Drop image here or click to browse</div>
         <div class="drop-zone-sub">PNG, JPG, WEBP supported</div>
         <img class="drop-preview" id="dropPreview" />
       </div>
@@ -644,18 +590,6 @@
   </div>
 </div>
 
-<!-- PAGE EDITOR -->
-<div class="editor-overlay" id="editorOverlay">
-  <div class="editor-toolbar">
-    <span class="editor-title">✏️ Edit Page Source</span>
-    <span class="editor-status" id="editorStatus"></span>
-    <button class="btn btn-cancel" onclick="downloadEditorBackup()">⬇ Backup</button>
-    <button class="btn btn-danger" onclick="closePageEditor()">Cancel</button>
-    <button class="btn btn-save" onclick="savePageSource()">Push to GitHub</button>
-  </div>
-  <textarea class="editor-textarea" id="editorTextarea" spellcheck="false"></textarea>
-</div>
-
 <script>
   const OWNER = 'Nic-St';
   const REPO  = 'Dad-Scrapbook';
@@ -694,6 +628,14 @@
   let activeFilter = 'all';
   let darkMode     = false;
 
+  // ── ENCODING ──
+  // Proper UTF-8 decode from base64 — handles em dashes, smart quotes, etc.
+  function b64Decode(b64) {
+    const binary = atob(b64.replace(/\n/g, ''));
+    const bytes  = Uint8Array.from(binary, c => c.charCodeAt(0));
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+
   // ── THEME ──
   function initTheme() {
     const stored = localStorage.getItem('scrapbook_theme');
@@ -706,7 +648,7 @@
 
   function applyTheme() {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-    document.getElementById('themeToggle').textContent = darkMode ? '☀️ Light' : '🌙 Dark';
+    document.getElementById('themeToggle').textContent = darkMode ? '\u2600\uFE0F Light' : '\uD83C\uDF19 Dark';
   }
 
   function toggleTheme() {
@@ -730,7 +672,7 @@
       const res  = await fetch(API, { headers });
       const json = await res.json();
       fileSha = json.sha;
-      cards   = JSON.parse(atob(json.content.replace(/\n/g, '')));
+      cards   = JSON.parse(b64Decode(json.content));
       render();
     } catch(e) {
       document.getElementById('scrapbook').innerHTML =
@@ -816,7 +758,7 @@
     document.getElementById('cardCount').textContent =
       n === 0 ? '' : `${n} thing${n !== 1 ? 's' : ''} collected so far`;
     document.getElementById('footerNote').textContent =
-      n > 0 ? 'more to come — this is just the beginning ✦' : '';
+      n > 0 ? 'more to come \u2014 this is just the beginning \u2756' : '';
 
     buildFilterBar();
   }
@@ -836,7 +778,7 @@
   async function authenticate() {
     const token = document.getElementById('tokenInput').value.trim();
     if (!token) return showStatus('authStatus2','error','Please enter a token.');
-    showStatus('authStatus2','','Checking…');
+    showStatus('authStatus2','','Checking\u2026');
     try {
       const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -848,13 +790,12 @@
       if (anthropicKey) sessionStorage.setItem('anthropic_key', anthropicKey);
 
       authed = true;
-      document.getElementById('authStatus').textContent = '✓ Authenticated';
+      document.getElementById('authStatus').textContent = '\u2713 Authenticated';
       document.getElementById('authStatus').className = 'auth-status';
       document.getElementById('addBtn').style.display = 'inline-block';
       if (sessionStorage.getItem('anthropic_key')) {
         document.getElementById('screenshotBtn').style.display = 'inline-block';
       }
-      document.getElementById('editorBtn').style.display = 'inline-block';
       closeModal('authModal');
       render();
     } catch(e) {
@@ -867,7 +808,7 @@
     const cardTags = cards.map(c => c.tag);
     const allTags  = [...new Set([...BASE_CATEGORIES, ...cardTags])];
     const sel      = document.getElementById('fTag');
-    sel.innerHTML  = '<option value="">Select a category…</option>';
+    sel.innerHTML  = '<option value="">Select a category\u2026</option>';
     allTags.forEach(t => {
       const o = document.createElement('option');
       o.value = t; o.textContent = t;
@@ -875,7 +816,7 @@
       sel.appendChild(o);
     });
     const c = document.createElement('option');
-    c.value = '__custom__'; c.textContent = '+ Add new category…';
+    c.value = '__custom__'; c.textContent = '+ Add new category\u2026';
     sel.appendChild(c);
   }
 
@@ -924,7 +865,7 @@
     if (!title || !points.length || !tag || !date)
       return showStatus('cardStatus','error','Please fill in all fields.');
 
-    showStatus('cardStatus','','Saving…');
+    showStatus('cardStatus','','Saving\u2026');
 
     if (editingId !== null) {
       const idx = cards.findIndex(c => c.id === editingId);
@@ -946,7 +887,7 @@
   }
 
   async function confirmDelete() {
-    showStatus('deleteStatus','','Deleting…');
+    showStatus('deleteStatus','','Deleting\u2026');
     cards = cards.filter(c => c.id !== deletingId);
     const ok = await commitCards('deleteStatus');
     if (ok) closeModal('deleteModal');
@@ -1011,7 +952,6 @@
     reader.readAsDataURL(file);
   }
 
-  // Drag and drop
   const dropZone = document.getElementById('dropZone');
   dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
   dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
@@ -1029,7 +969,7 @@
 
     const btn = document.getElementById('analyseBtn');
     btn.disabled = true;
-    showStatus('screenshotStatus','','Analysing screenshot…');
+    showStatus('screenshotStatus','','Analysing screenshot\u2026');
 
     const knownTags = [...new Set([...BASE_CATEGORIES, ...cards.map(c => c.tag)])];
 
@@ -1080,7 +1020,6 @@ Rules:
       const clean = text.replace(/```json|```/g, '').trim();
       const parsed = JSON.parse(clean);
 
-      // Pre-fill the card form and open it
       closeModal('screenshotModal');
       editingId = null;
       document.getElementById('cardModalTitle').textContent = 'Add Note';
@@ -1096,64 +1035,6 @@ Rules:
     } catch(e) {
       showStatus('screenshotStatus','error', 'Could not parse response: ' + e.message);
       btn.disabled = false;
-    }
-  }
-
-  // ── PAGE EDITOR ──
-  const PAGE_API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/index.html`;
-  let pageSha = '';
-
-  async function openPageEditor() {
-    const token = sessionStorage.getItem('gh_token');
-    document.getElementById('editorStatus').textContent = 'Loading…';
-    document.getElementById('editorOverlay').classList.add('open');
-    document.getElementById('editorTextarea').value = '';
-
-    try {
-      const res  = await fetch(PAGE_API, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
-      const json = await res.json();
-      pageSha = json.sha;
-      const source = decodeURIComponent(escape(atob(json.content.replace(/\n/g, ''))));
-      document.getElementById('editorTextarea').value = source;
-      document.getElementById('editorStatus').textContent = 'Loaded from GitHub ✓';
-      setTimeout(() => { document.getElementById('editorStatus').textContent = ''; }, 3000);
-    } catch(e) {
-      document.getElementById('editorStatus').textContent = 'Failed to load: ' + e.message;
-    }
-  }
-
-  function closePageEditor() {
-    document.getElementById('editorOverlay').classList.remove('open');
-  }
-
-  function downloadEditorBackup() {
-    const src  = document.getElementById('editorTextarea').value;
-    const blob = new Blob([src], { type: 'text/html' });
-    const a    = document.createElement('a');
-    a.href     = URL.createObjectURL(blob);
-    a.download = 'index-backup.html';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  async function savePageSource() {
-    const token  = sessionStorage.getItem('gh_token');
-    const source = document.getElementById('editorTextarea').value;
-    document.getElementById('editorStatus').textContent = 'Pushing…';
-
-    try {
-      const content = btoa(unescape(encodeURIComponent(source)));
-      const res = await fetch(PAGE_API, {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Edit page source', content, sha: pageSha })
-      });
-      if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Push failed.'); }
-      const data = await res.json();
-      pageSha = data.content.sha;
-      document.getElementById('editorStatus').textContent = 'Pushed to GitHub ✓ — reload to see changes';
-    } catch(e) {
-      document.getElementById('editorStatus').textContent = 'Error: ' + e.message;
     }
   }
 
