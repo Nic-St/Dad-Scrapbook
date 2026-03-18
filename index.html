@@ -462,6 +462,58 @@
   .drop-preview.visible { display: block; margin: 12px auto 0; }
 
   .btn-ai { background: var(--dusty-blue); color: #fdf8f0; }
+  .btn-editor { background: var(--brown); color: #fdf8f0; }
+
+  /* ── PAGE EDITOR ── */
+  .editor-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: var(--bg);
+    flex-direction: column;
+  }
+  .editor-overlay.open { display: flex; }
+
+  .editor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--card-bg);
+    border-bottom: 1.5px solid var(--input-border);
+    flex-shrink: 0;
+  }
+
+  .editor-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+    margin-right: auto;
+  }
+
+  .editor-status {
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    color: var(--brown);
+    opacity: 0.65;
+  }
+
+  .editor-textarea {
+    flex: 1;
+    width: 100%;
+    padding: 20px;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    background: var(--input-bg);
+    color: var(--ink);
+    tab-size: 2;
+    transition: background 0.3s, color 0.3s;
+  }
 
   @media (max-width: 680px) {
     .scrapbook { grid-template-columns: 1fr; gap: 48px; }
@@ -489,6 +541,7 @@
   <span class="auth-status unauthed" id="authStatus">Not authenticated</span>
   <button class="btn btn-primary" id="addBtn" onclick="openAddModal()" style="display:none">+ Add Note</button>
   <button class="btn btn-ai" id="screenshotBtn" onclick="openScreenshotModal()" style="display:none">📷 From Screenshot</button>
+  <button class="btn btn-editor" id="editorBtn" onclick="openPageEditor()" style="display:none">✏️ Edit Page</button>
   <div class="toolbar-right">
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙 Dark</button>
   </div>
@@ -589,6 +642,18 @@
       <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
     </div>
   </div>
+</div>
+
+<!-- PAGE EDITOR -->
+<div class="editor-overlay" id="editorOverlay">
+  <div class="editor-toolbar">
+    <span class="editor-title">✏️ Edit Page Source</span>
+    <span class="editor-status" id="editorStatus"></span>
+    <button class="btn btn-cancel" onclick="downloadEditorBackup()">⬇ Backup</button>
+    <button class="btn btn-danger" onclick="closePageEditor()">Cancel</button>
+    <button class="btn btn-save" onclick="savePageSource()">Push to GitHub</button>
+  </div>
+  <textarea class="editor-textarea" id="editorTextarea" spellcheck="false"></textarea>
 </div>
 
 <script>
@@ -789,6 +854,7 @@
       if (sessionStorage.getItem('anthropic_key')) {
         document.getElementById('screenshotBtn').style.display = 'inline-block';
       }
+      document.getElementById('editorBtn').style.display = 'inline-block';
       closeModal('authModal');
       render();
     } catch(e) {
@@ -1030,6 +1096,64 @@ Rules:
     } catch(e) {
       showStatus('screenshotStatus','error', 'Could not parse response: ' + e.message);
       btn.disabled = false;
+    }
+  }
+
+  // ── PAGE EDITOR ──
+  const PAGE_API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/index.html`;
+  let pageSha = '';
+
+  async function openPageEditor() {
+    const token = sessionStorage.getItem('gh_token');
+    document.getElementById('editorStatus').textContent = 'Loading…';
+    document.getElementById('editorOverlay').classList.add('open');
+    document.getElementById('editorTextarea').value = '';
+
+    try {
+      const res  = await fetch(PAGE_API, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
+      const json = await res.json();
+      pageSha = json.sha;
+      const source = decodeURIComponent(escape(atob(json.content.replace(/\n/g, ''))));
+      document.getElementById('editorTextarea').value = source;
+      document.getElementById('editorStatus').textContent = 'Loaded from GitHub ✓';
+      setTimeout(() => { document.getElementById('editorStatus').textContent = ''; }, 3000);
+    } catch(e) {
+      document.getElementById('editorStatus').textContent = 'Failed to load: ' + e.message;
+    }
+  }
+
+  function closePageEditor() {
+    document.getElementById('editorOverlay').classList.remove('open');
+  }
+
+  function downloadEditorBackup() {
+    const src  = document.getElementById('editorTextarea').value;
+    const blob = new Blob([src], { type: 'text/html' });
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = 'index-backup.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  async function savePageSource() {
+    const token  = sessionStorage.getItem('gh_token');
+    const source = document.getElementById('editorTextarea').value;
+    document.getElementById('editorStatus').textContent = 'Pushing…';
+
+    try {
+      const content = btoa(unescape(encodeURIComponent(source)));
+      const res = await fetch(PAGE_API, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Edit page source', content, sha: pageSha })
+      });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Push failed.'); }
+      const data = await res.json();
+      pageSha = data.content.sha;
+      document.getElementById('editorStatus').textContent = 'Pushed to GitHub ✓ — reload to see changes';
+    } catch(e) {
+      document.getElementById('editorStatus').textContent = 'Error: ' + e.message;
     }
   }
 
