@@ -636,12 +636,12 @@
     <div class="form-group">
       <label>GitHub Personal Access Token</label>
       <input type="password" id="tokenInput" placeholder="ghp_..." />
-      <div class="form-hint">Needs Contents read/write on Dad-Scrapbook. Stored in sessionStorage only.</div>
+      <div class="form-hint">Needs Contents read/write on Dad-Scrapbook. Stored in localStorage only.</div>
     </div>
     <div class="form-group">
       <label>Anthropic API Key <span style="opacity:0.5;font-size:12px;">(optional &#x2014; for screenshot feature)</span></label>
       <input type="password" id="anthropicKeyInput" placeholder="sk-ant-..." />
-      <div class="form-hint">Only needed for the "From Screenshot" feature. Stored in sessionStorage only.</div>
+      <div class="form-hint">Only needed for the "From Screenshot" feature. Stored in localStorage only.</div>
     </div>
     <div id="authStatus2" class="status-msg"></div>
     <div class="modal-actions">
@@ -804,7 +804,7 @@
   async function loadCards() {
     try {
       const headers = { 'Accept': 'application/vnd.github.v3+json' };
-      const token = sessionStorage.getItem('gh_token');
+      const token = localStorage.getItem('gh_token');
       if (token) headers['Authorization'] = `Bearer ${token}`;
       const res  = await fetch(API, { headers });
       const json = await res.json();
@@ -911,8 +911,8 @@
 
   // ── AUTH ──
   function openAuthModal() {
-    document.getElementById('tokenInput').value = sessionStorage.getItem('gh_token') || '';
-    document.getElementById('anthropicKeyInput').value = sessionStorage.getItem('anthropic_key') || '';
+    document.getElementById('tokenInput').value = localStorage.getItem('gh_token') || '';
+    document.getElementById('anthropicKeyInput').value = localStorage.getItem('anthropic_key') || '';
     showStatus('authStatus2','','');
     openModal('authModal');
   }
@@ -926,16 +926,16 @@
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error('Invalid token or no repo access.');
-      sessionStorage.setItem('gh_token', token);
+      localStorage.setItem('gh_token', token);
 
       const anthropicKey = document.getElementById('anthropicKeyInput').value.trim();
-      if (anthropicKey) sessionStorage.setItem('anthropic_key', anthropicKey);
+      if (anthropicKey) localStorage.setItem('anthropic_key', anthropicKey);
 
       authed = true;
       document.getElementById('authStatus').textContent = '\u2713 Authenticated';
       document.getElementById('authStatus').className = 'auth-status';
       document.getElementById('addBtn').style.display = 'inline-block';
-      if (sessionStorage.getItem('anthropic_key')) {
+      if (localStorage.getItem('anthropic_key')) {
         document.getElementById('screenshotBtn').style.display = 'inline-block';
       }
       closeModal('authModal');
@@ -1059,7 +1059,7 @@
 
   // ── GITHUB COMMIT ──
   async function commitCards(statusEl) {
-    const token = sessionStorage.getItem('gh_token');
+    const token = localStorage.getItem('gh_token');
     try {
       const content = btoa(unescape(encodeURIComponent(JSON.stringify(cards, null, 2))));
       const res = await fetch(API, {
@@ -1128,7 +1128,7 @@
 
   async function analyseScreenshot() {
     if (!screenshotBase64) return;
-    const apiKey = sessionStorage.getItem('anthropic_key');
+    const apiKey = localStorage.getItem('anthropic_key');
     if (!apiKey) return showStatus('screenshotStatus','error','No Anthropic API key found. Re-authenticate and add your key.');
 
     const btn = document.getElementById('analyseBtn');
@@ -1242,7 +1242,7 @@ Rules:
   }
 
   async function commitImage(filename, base64, statusEl) {
-    const token = sessionStorage.getItem('gh_token');
+    const token = localStorage.getItem('gh_token');
     const imgAPI = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${filename}`;
     try {
       // Check if file already exists (get its sha)
