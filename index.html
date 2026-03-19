@@ -462,19 +462,45 @@
   }
   .drop-preview.visible { display: block; margin: 12px auto 0; }
 
-  /* ── CARD THUMBNAIL ── */
-  .card-thumb {
-    width: 48px;
-    height: 48px;
-    border-radius: 2px;
-    object-fit: cover;
-    cursor: pointer;
-    opacity: 0.85;
-    transition: opacity 0.15s, transform 0.15s;
-    flex-shrink: 0;
-    border: 1.5px solid var(--input-border);
+  /* ── CARD IMAGE (side panel) ── */
+  .card-inner {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
   }
-  .card-thumb:hover { opacity: 1; transform: scale(1.05); }
+
+  .card-body { flex: 1; min-width: 0; }
+
+  .card-img-panel {
+    width: 120px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .card-img-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.15s;
+  }
+
+  .card-img-panel:hover img { opacity: 0.85; }
+
+  .card-img-panel::after {
+    content: '\1F50D';
+    position: absolute;
+    bottom: 6px; right: 6px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+  }
+
+  .card-img-panel:hover::after { opacity: 0.8; }
 
   /* ── LIGHTBOX ── */
   .lightbox {
@@ -853,13 +879,17 @@
           <button class="card-btn delete" onclick="openDeleteModal(${card.id})">Delete</button>
         </div>
         <div style="position:absolute;top:-12px;left:${tapeLeft};transform:translateX(-50%) rotate(${tapeRot}deg);width:70px;height:24px;background:var(--tape);border-radius:1px;pointer-events:none;"></div>
-        <div class="card-accent" style="background:${col.fg};"></div>
-        <div class="card-title">${escHtml(card.title)}</div>
-        <ul class="card-points">${card.points.map(p => `<li>${escHtml(p)}</li>`).join('')}</ul>
-        <div class="card-footer">
-          <span class="card-tag" style="background:${col.bg};color:${col.fg};">${escHtml(card.tag)}</span>
-          <span class="card-date">${escHtml(card.date)}</span>
-          ${card.image ? `<img class="card-thumb" src="https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${escHtml(card.image)}" alt="attachment" onclick="openLightbox('https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${escHtml(card.image)}')" />` : ''}
+        <div class="card-inner">
+          <div class="card-body">
+            <div class="card-accent" style="background:${col.fg};"></div>
+            <div class="card-title">${escHtml(card.title)}</div>
+            <ul class="card-points">${card.points.map(p => `<li>${escHtml(p)}</li>`).join('')}</ul>
+            <div class="card-footer">
+              <span class="card-tag" style="background:${col.bg};color:${col.fg};">${escHtml(card.tag)}</span>
+              <span class="card-date">${escHtml(card.date)}</span>
+            </div>
+          </div>
+          ${card.image ? `<div class="card-img-panel" onclick="openLightbox('https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${escHtml(card.image)}')"><img src="https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${escHtml(card.image)}" alt="attachment" /></div>` : ''}
         </div>
       `;
       grid.appendChild(el);
