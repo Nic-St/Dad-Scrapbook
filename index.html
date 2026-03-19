@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- VERSION: 1.2.1 -->
+<!-- VERSION: 1.2.2 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -123,6 +123,7 @@
   /* ── TOOLBAR ── */
   .toolbar {
     max-width: 1100px;
+    width: 100%;
     margin: 0 auto 24px;
     display: flex;
     align-items: center;
@@ -135,8 +136,8 @@
     transition: background-color 0.3s;
   }
 
-  .toolbar-right     { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-  .toolbar-divider   { width: 1px; height: 20px; background: var(--input-border); opacity: 0.6; margin: 0 4px; }
+  .toolbar-right   { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .toolbar-divider { width: 1px; height: 20px; background: var(--input-border); opacity: 0.6; margin: 0 4px; }
 
   .theme-toggle {
     background: transparent;
@@ -205,9 +206,6 @@
   .btn-danger             { background: #c03a2a; color: #fdf8f0; }
   .btn-ai                 { background: var(--dusty-blue); color: #fdf8f0; }
   .btn-hidden             { display: none; }
-
-  .auth-status          { font-family: 'Caveat', cursive; font-size: 15px; color: var(--sage); opacity: 0.85; }
-  .auth-status.unauthed { color: var(--brown); opacity: 0.5; }
 
   /* ── GRID ── */
   .scrapbook {
@@ -490,8 +488,7 @@
 </header>
 
 <div class="toolbar">
-  <button class="btn btn-auth" onclick="openAuthModal()">&#x1F511; Authenticate</button>
-  <span class="auth-status unauthed" id="authStatus">Not authenticated</span>
+  <button class="btn btn-auth" id="authBtn" onclick="openAuthModal()">&#x1F511; Authenticate</button>
   <div class="toolbar-divider" id="toolbarDivider" style="display:none"></div>
   <button class="btn btn-primary btn-hidden" id="addBtn" onclick="openAddModal()">+ Add Note</button>
   <button class="btn btn-ai btn-hidden" id="screenshotBtn" onclick="openScreenshotModal()">&#x1F4F7; Screenshot</button>
@@ -694,8 +691,7 @@
     initTheme();
     if (localStorage.getItem('gh_token')) {
       authed = true;
-      document.getElementById('authStatus').textContent = '\u2713 Authenticated';
-      document.getElementById('authStatus').className   = 'auth-status';
+      document.getElementById('authBtn').textContent = '\u2713 Logged in';
       document.getElementById('addBtn').classList.remove('btn-hidden');
       document.getElementById('toolbarDivider').style.display = 'block';
       if (localStorage.getItem('anthropic_key'))
@@ -833,8 +829,7 @@
       if (anthropicKey) localStorage.setItem('anthropic_key', anthropicKey);
 
       authed = true;
-      document.getElementById('authStatus').textContent = '\u2713 Authenticated';
-      document.getElementById('authStatus').className   = 'auth-status';
+      document.getElementById('authBtn').textContent = '\u2713 Logged in';
       document.getElementById('addBtn').classList.remove('btn-hidden');
       document.getElementById('toolbarDivider').style.display = 'block';
       if (localStorage.getItem('anthropic_key'))
