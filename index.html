@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- VERSION: 1.1 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -468,6 +469,7 @@
     display: flex;
     gap: 16px;
     align-items: stretch;
+    min-height: 0;
   }
 
   .card-body { flex: 1; min-width: 0; }
@@ -479,7 +481,6 @@
     overflow: hidden;
     cursor: pointer;
     position: relative;
-    align-self: stretch;
     min-height: 120px;
   }
 
@@ -589,10 +590,20 @@
     opacity: 0.8;
   }
   .img-remove-btn.visible { display: inline-block; }
+
+  @media (max-width: 680px) {
     .scrapbook { grid-template-columns: 1fr; gap: 48px; }
     .header-card { padding: 28px 32px; }
     .toolbar { justify-content: center; }
     .toolbar-right { margin-left: 0; }
+    /* On mobile, image sits below the text rather than beside it */
+    .card-inner { flex-direction: column; }
+    .card-img-panel {
+      width: 100%;
+      height: 180px;
+      align-self: auto;
+    }
+    .card-img-panel img { position: absolute; inset: 0; }
   }
 </style>
 </head>
