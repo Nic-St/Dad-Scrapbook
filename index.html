@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- VERSION: 1.2 -->
+<!-- VERSION: 1.2.1 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -126,24 +126,30 @@
     margin: 0 auto 24px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
+    background: var(--card-bg);
+    border-radius: 4px;
+    padding: 10px 16px;
+    box-shadow: 2px 3px 12px var(--shadow);
+    transition: background-color 0.3s;
   }
 
-  .toolbar-right { margin-left: auto; }
+  .toolbar-right     { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .toolbar-divider   { width: 1px; height: 20px; background: var(--input-border); opacity: 0.6; margin: 0 4px; }
 
   .theme-toggle {
-    background: var(--card-bg);
+    background: transparent;
     border: 1.5px solid var(--input-border);
     border-radius: 20px;
-    padding: 6px 14px;
+    padding: 5px 14px;
     cursor: pointer;
     font-family: 'Caveat', cursive;
     font-size: 15px;
     color: var(--brown);
-    transition: background 0.3s, color 0.3s, border-color 0.3s;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
   }
-  .theme-toggle:hover { opacity: 0.8; }
+  .theme-toggle:hover { background: var(--input-bg); }
 
   /* ── FILTER BAR ── */
   .filter-bar {
@@ -486,8 +492,9 @@
 <div class="toolbar">
   <button class="btn btn-auth" onclick="openAuthModal()">&#x1F511; Authenticate</button>
   <span class="auth-status unauthed" id="authStatus">Not authenticated</span>
+  <div class="toolbar-divider" id="toolbarDivider" style="display:none"></div>
   <button class="btn btn-primary btn-hidden" id="addBtn" onclick="openAddModal()">+ Add Note</button>
-  <button class="btn btn-ai btn-hidden" id="screenshotBtn" onclick="openScreenshotModal()">&#x1F4F7; From Screenshot</button>
+  <button class="btn btn-ai btn-hidden" id="screenshotBtn" onclick="openScreenshotModal()">&#x1F4F7; Screenshot</button>
   <div class="toolbar-right">
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">&#x1F319; Dark</button>
   </div>
@@ -690,6 +697,7 @@
       document.getElementById('authStatus').textContent = '\u2713 Authenticated';
       document.getElementById('authStatus').className   = 'auth-status';
       document.getElementById('addBtn').classList.remove('btn-hidden');
+      document.getElementById('toolbarDivider').style.display = 'block';
       if (localStorage.getItem('anthropic_key'))
         document.getElementById('screenshotBtn').classList.remove('btn-hidden');
     }
@@ -828,6 +836,7 @@
       document.getElementById('authStatus').textContent = '\u2713 Authenticated';
       document.getElementById('authStatus').className   = 'auth-status';
       document.getElementById('addBtn').classList.remove('btn-hidden');
+      document.getElementById('toolbarDivider').style.display = 'block';
       if (localStorage.getItem('anthropic_key'))
         document.getElementById('screenshotBtn').classList.remove('btn-hidden');
 
