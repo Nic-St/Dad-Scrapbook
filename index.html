@@ -479,6 +479,8 @@
     overflow: hidden;
     cursor: pointer;
     position: relative;
+    align-self: stretch;
+    min-height: 120px;
   }
 
   .card-img-panel img {
@@ -486,6 +488,8 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    position: absolute;
+    inset: 0;
     transition: opacity 0.15s;
   }
 
@@ -798,6 +802,17 @@
   // ── INIT ──
   async function init() {
     initTheme();
+    // Restore auth state if tokens already stored
+    const savedToken = localStorage.getItem('gh_token');
+    if (savedToken) {
+      authed = true;
+      document.getElementById('authStatus').textContent = '\u2713 Authenticated';
+      document.getElementById('authStatus').className = 'auth-status';
+      document.getElementById('addBtn').style.display = 'inline-block';
+      if (localStorage.getItem('anthropic_key')) {
+        document.getElementById('screenshotBtn').style.display = 'inline-block';
+      }
+    }
     await loadCards();
   }
 
