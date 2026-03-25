@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<!-- VERSION: 1.0.1 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timeline — Nic's Dad Scrapbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── LIGHT THEME ── */
+  :root {
+    --bg:           #d9cdb8;
+    --card-bg:      #fdf8f0;
+    --ink:          #2c1f0e;
+    --body-text:    #4a3520;
+    --brown:        #7a5c3a;
+    --rust:         #c05c2a;
+    --sage:         #6b7c5c;
+    --dusty-blue:   #5a7080;
+    --tape:         rgba(200, 180, 130, 0.45);
+    --shadow:       rgba(44, 31, 14, 0.12);
+    --input-bg:     #f5efe3;
+    --input-border: #d9cdb8;
+    --filter-bg:    rgba(253,248,240,0.75);
+    --line-color:   rgba(122, 92, 58, 0.25);
+  }
+
+  /* ── DARK THEME ── */
+  [data-theme="dark"] {
+    --bg:           #1a1410;
+    --card-bg:      #241c14;
+    --ink:          #e8d9c0;
+    --body-text:    #c4a87a;
+    --brown:        #b8956a;
+    --rust:         #d4703a;
+    --sage:         #7a9068;
+    --dusty-blue:   #6a8898;
+    --tape:         rgba(160, 130, 80, 0.3);
+    --shadow:       rgba(0, 0, 0, 0.45);
+    --input-bg:     #1e1810;
+    --input-border: #3a2e20;
+    --filter-bg:    rgba(36,28,20,0.85);
+    --line-color:   rgba(184, 149, 106, 0.2);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg);
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8a98a' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    padding: 40px 20px 80px;
+    transition: background-color 0.3s;
+  }
+
+  /* ── HEADER ── */
+  header { text-align: center; margin-bottom: 48px; }
+
+  .header-card {
+    display: inline-block;
+    background: var(--card-bg);
+    padding: 28px 48px;
+    border-radius: 2px;
+    box-shadow: 4px 6px 24px var(--shadow);
+    position: relative;
+    transform: rotate(-0.3deg);
+    transition: background-color 0.3s;
+  }
+
+  .header-card::before {
+    content: '';
+    position: absolute;
+    top: -14px; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 28px;
+    background: var(--tape);
+    border-radius: 1px;
+  }
+
+  .header-label {
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    color: var(--brown);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    color: var(--ink);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  h1 em { font-style: italic; color: var(--rust); }
+
+  .header-sub {
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    color: var(--brown);
+    margin-top: 8px;
+    opacity: 0.7;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    background: var(--card-bg);
+    border-radius: 4px;
+    padding: 10px 16px;
+    box-shadow: 2px 3px 12px var(--shadow);
+    transition: background-color 0.3s;
+  }
+
+  .toolbar-right   { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .toolbar-divider { width: 1px; height: 20px; background: var(--input-border); opacity: 0.6; margin: 0 4px; }
+
+  .theme-toggle {
+    background: transparent;
+    border: 1.5px solid var(--input-border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    cursor: pointer;
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    color: var(--brown);
+    transition: background 0.2s;
+  }
+  .theme-toggle:hover { background: var(--input-bg); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    letter-spacing: 1px;
+    padding: 8px 20px;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn:hover  { opacity: 0.85; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-primary, .btn-save { background: var(--rust); color: #fdf8f0; }
+  .btn-auth               { background: var(--sage); color: #fdf8f0; }
+  .btn-cancel             { background: var(--input-bg); color: var(--brown); }
+  .btn-danger             { background: #c03a2a; color: #fdf8f0; }
+  .btn-back               { background: var(--brown); color: #fdf8f0; }
+  .btn-hidden             { display: none; }
+
+  /* ── TIMELINE LAYOUT ── */
+  .timeline-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    position: relative;
+    padding-left: 80px;
+  }
+
+  /* Vertical line */
+  .timeline-wrap::before {
+    content: '';
+    position: absolute;
+    left: 54px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--line-color);
+  }
+
+  /* ── WEEK ROW ── */
+  .week-row {
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  /* Dot on the line */
+  .week-dot {
+    position: absolute;
+    left: -32px;
+    top: 14px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--input-border);
+    border: 2px solid var(--bg);
+    transition: background 0.2s;
+  }
+
+  .week-row.has-entries .week-dot {
+    background: var(--rust);
+    width: 14px;
+    height: 14px;
+    left: -34px;
+    top: 12px;
+  }
+
+  .week-row.current-week .week-dot {
+    background: var(--sage);
+    box-shadow: 0 0 0 3px rgba(107, 124, 92, 0.3);
+  }
+
+  /* Week label */
+  .week-label {
+    position: absolute;
+    left: -76px;
+    top: 10px;
+    font-family: 'Caveat', cursive;
+    font-size: 13px;
+    color: var(--brown);
+    opacity: 0.5;
+    white-space: nowrap;
+    width: 40px;
+    text-align: right;
+  }
+
+  .week-row.has-entries .week-label { opacity: 0.9; font-size: 14px; }
+  .week-row.current-week .week-label { color: var(--sage); opacity: 1; }
+
+  /* Week header (date range) */
+  .week-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .week-date-range {
+    font-family: 'Caveat', cursive;
+    font-size: 13px;
+    color: var(--brown);
+    opacity: 0.45;
+  }
+
+  .week-row.has-entries .week-date-range { opacity: 0.7; }
+
+  .week-add-btn {
+    opacity: 0;
+    font-family: 'Caveat', cursive;
+    font-size: 12px;
+    color: var(--rust);
+    background: none;
+    border: 1px solid var(--rust);
+    border-radius: 2px;
+    padding: 1px 8px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .week-header:hover .week-add-btn { opacity: 0.8; }
+  .week-add-btn:hover { opacity: 1 !important; }
+
+  /* Current week badge */
+  .current-badge {
+    font-family: 'Caveat', cursive;
+    font-size: 12px;
+    background: var(--sage);
+    color: #fdf8f0;
+    padding: 1px 8px;
+    border-radius: 10px;
+    opacity: 0.9;
+  }
+
+  /* ── ENTRIES ── */
+  .week-entries { padding-bottom: 4px; }
+
+  .entry-card {
+    background: var(--card-bg);
+    border-radius: 2px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    box-shadow: 2px 3px 12px var(--shadow);
+    position: relative;
+    transition: background-color 0.3s, box-shadow 0.2s;
+  }
+
+  .entry-card:hover { box-shadow: 3px 5px 18px var(--shadow); }
+
+  .entry-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .entry-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .entry-date {
+    font-family: 'Caveat', cursive;
+    font-size: 12px;
+    color: var(--brown);
+    opacity: 0.5;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .entry-note {
+    font-size: 0.85rem;
+    color: var(--body-text);
+    line-height: 1.6;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  .entry-img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 2px;
+    cursor: pointer;
+    background: var(--input-bg);
+    display: block;
+    transition: opacity 0.15s;
+  }
+  .entry-img:hover { opacity: 0.85; }
+
+  .entry-actions { display: none; position: absolute; top: 10px; right: 10px; gap: 6px; }
+  .entry-actions.visible { display: flex; }
+
+  .entry-btn        { font-family: 'Caveat', cursive; font-size: 12px; padding: 2px 8px; border-radius: 2px; border: none; cursor: pointer; opacity: 0.7; transition: opacity 0.15s; }
+  .entry-btn:hover  { opacity: 1; }
+  .entry-btn.edit   { background: #d8e5ec; color: #5a7080; }
+  .entry-btn.delete { background: #f0ddd1; color: #c05c2a; }
+
+  /* ── LIGHTBOX ── */
+  .lightbox      { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(10,6,2,0.88); align-items: center; justify-content: center; padding: 24px; cursor: pointer; }
+  .lightbox.open { display: flex; }
+  .lightbox img  { max-width: 100%; max-height: 90vh; border-radius: 2px; box-shadow: 0 8px 48px rgba(0,0,0,0.6); cursor: default; object-fit: contain; }
+  .lightbox-close       { position: absolute; top: 16px; right: 20px; font-family: 'Caveat', cursive; font-size: 20px; color: rgba(255,255,255,0.7); cursor: pointer; background: none; border: none; }
+  .lightbox-close:hover { color: #fff; }
+
+  /* ── MODAL ── */
+  .modal-overlay      { display: none; position: fixed; inset: 0; background: rgba(10,6,2,0.65); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--card-bg);
+    border-radius: 2px;
+    padding: 36px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 6px 10px 40px rgba(0,0,0,0.35);
+    max-height: 90vh;
+    overflow-y: auto;
+    transition: background-color 0.3s;
+  }
+
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--ink); margin-bottom: 22px; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-family: 'Caveat', cursive; font-size: 15px; letter-spacing: 1px; color: var(--brown); margin-bottom: 5px; text-transform: uppercase; }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--input-border);
+    border-radius: 2px;
+    background: var(--input-bg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, background 0.3s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--brown); }
+  .form-group textarea        { min-height: 100px; resize: vertical; }
+  .form-group input[readonly] { opacity: 0.65; cursor: default; }
+
+  .form-hint { font-size: 0.78rem; color: var(--brown); opacity: 0.55; margin-top: 4px; }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 22px; justify-content: flex-end; }
+
+  .status-msg         { font-family: 'Caveat', cursive; font-size: 15px; padding: 8px 14px; border-radius: 2px; margin-top: 12px; display: none; }
+  .status-msg.success { background: #dce4d6; color: var(--sage); display: block; }
+  .status-msg.error   { background: #f0ddd1; color: var(--rust); display: block; }
+
+  /* Image upload */
+  .img-upload-zone { border: 2px dashed var(--input-border); border-radius: 4px; padding: 16px; text-align: center; cursor: pointer; background: var(--input-bg); position: relative; transition: border-color 0.2s; }
+  .img-upload-zone:hover { border-color: var(--brown); }
+  .img-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .img-upload-label   { font-family: 'Caveat', cursive; font-size: 15px; color: var(--brown); opacity: 0.7; pointer-events: none; }
+  .img-upload-preview { max-width: 100%; max-height: 120px; border-radius: 2px; margin-top: 10px; display: none; object-fit: contain; }
+  .img-upload-preview.visible { display: block; margin: 10px auto 0; }
+  .img-remove-btn         { display: none; margin-top: 8px; font-family: 'Caveat', cursive; font-size: 13px; color: var(--rust); background: none; border: none; cursor: pointer; opacity: 0.8; }
+  .img-remove-btn.visible { display: inline-block; }
+
+  /* ── AUTH MODAL ── */
+  #authModal .modal { max-width: 420px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .timeline-wrap { padding-left: 60px; }
+    .timeline-wrap::before { left: 38px; }
+    .week-dot  { left: -22px; }
+    .week-label { left: -58px; width: 32px; font-size: 11px; }
+    .week-row.has-entries .week-dot { left: -24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-card">
+    <div class="header-label">The journey so far</div>
+    <h1>Our <em>pregnancy</em> timeline</h1>
+    <div class="header-sub" id="headerSub">due 17 Nov 2026 ✦ loading…</div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="btn btn-auth" id="authBtn" onclick="openAuthModal()">&#x1F511; Authenticate</button>
+  <div class="toolbar-divider" id="toolbarDivider" style="display:none"></div>
+  <button class="btn btn-primary btn-hidden" id="addBtn" onclick="openAddModal()">+ Add Entry</button>
+  <div class="toolbar-right">
+    <a href="index.html" class="btn btn-back">&#x2190; Scrapbook</a>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">&#x1F319; Dark</button>
+  </div>
+</div>
+
+<div class="timeline-wrap" id="timelineWrap"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">&#x2715; close</button>
+  <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-title">Authenticate</div>
+    <div class="form-group">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="tokenInput" placeholder="ghp_..." />
+      <div class="form-hint">Same token as the scrapbook. Stored in localStorage.</div>
+    </div>
+    <div id="authStatus" class="status-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('authModal')">Cancel</button>
+      <button class="btn btn-save" onclick="authenticate()">Authenticate</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT ENTRY MODAL -->
+<div class="modal-overlay" id="entryModal">
+  <div class="modal">
+    <div class="modal-title" id="entryModalTitle">Add Entry</div>
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" id="fTitle" placeholder="e.g. First ultrasound" />
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <textarea id="fNote" placeholder="What happened, how you felt…"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Week</label>
+      <select id="fWeek"></select>
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="text" id="fDate" readonly />
+      <div class="form-hint">Automatically set to today.</div>
+    </div>
+    <div class="form-group">
+      <label>Image <span style="opacity:0.5;font-size:12px;">(optional)</span></label>
+      <div class="img-upload-zone">
+        <input type="file" id="fImage" accept="image/*" onchange="handleImageSelect(event)" />
+        <div class="img-upload-label">&#x1F5BC; Click to attach an image</div>
+        <img class="img-upload-preview" id="imgPreview" />
+      </div>
+      <button class="img-remove-btn" id="imgRemoveBtn" onclick="removeImage()">&#x2715; Remove image</button>
+    </div>
+    <div id="entryStatus" class="status-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('entryModal')">Cancel</button>
+      <button class="btn btn-save" onclick="saveEntry()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-title">Delete this entry?</div>
+    <p style="font-size:0.9rem;color:var(--brown);margin-bottom:8px;">This can't be undone.</p>
+    <div id="deleteStatus" class="status-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── CONSTANTS ──
+  const OWNER       = 'Nic-St';
+  const REPO        = 'Dad-Scrapbook';
+  const FILE        = 'timeline.json';
+  const API         = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`;
+  const RAW_BASE    = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/`;
+  const LMP         = new Date('2026-02-10'); // Week 1 start
+  const DUE_DATE    = new Date('2026-11-17');
+  const TOTAL_WEEKS = 40;
+
+  // ── STATE ──
+  let entries    = [];
+  let fileSha    = '';
+  let authed     = false;
+  let editingId  = null;
+  let deletingId = null;
+  let darkMode   = false;
+
+  let pendingImageBase64 = null;
+  let pendingImageMime   = null;
+  let pendingImagePath   = null;
+
+  // ── UTILS ──
+  function b64Decode(b64) {
+    const bytes = Uint8Array.from(atob(b64.replace(/\n/g, '')), c => c.charCodeAt(0));
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+
+  function b64Encode(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+
+  function ghHeaders() {
+    return { 'Authorization': `Bearer ${localStorage.getItem('gh_token')}`, 'Content-Type': 'application/json' };
+  }
+
+  function openModal(id)  { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  function showStatus(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className   = 'status-msg' + (type ? ' ' + type : '');
+    el.textContent = msg;
+    if (!type) el.style.display = msg ? 'block' : 'none';
+  }
+
+  function todayStr() {
+    return new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── WEEK CALCULATIONS ──
+  function currentWeek() {
+    const today    = new Date();
+    const diffDays = Math.floor((today - LMP) / (1000 * 60 * 60 * 24));
+    return Math.min(Math.max(Math.floor(diffDays / 7) + 1, 1), TOTAL_WEEKS);
+  }
+
+  function weekStartDate(week) {
+    const d = new Date(LMP);
+    d.setDate(d.getDate() + (week - 1) * 7);
+    return d;
+  }
+
+  function weekDateRange(week) {
+    const start = weekStartDate(week);
+    const end   = new Date(start);
+    end.setDate(end.getDate() + 6);
+    const fmt = d => d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+    return `${fmt(start)} \u2014 ${fmt(end)}`;
+  }
+
+  // ── THEME ──
+  function initTheme() {
+    const stored = localStorage.getItem('scrapbook_theme');
+    darkMode = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!localStorage.getItem('scrapbook_theme')) { darkMode = e.matches; applyTheme(); }
+    });
+  }
+
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    document.getElementById('themeToggle').textContent = darkMode ? '\u2600\uFE0F Light' : '\uD83C\uDF19 Dark';
+  }
+
+  function toggleTheme() {
+    darkMode = !darkMode;
+    localStorage.setItem('scrapbook_theme', darkMode ? 'dark' : 'light');
+    applyTheme();
+  }
+
+  // ── INIT ──
+  async function init() {
+    initTheme();
+    updateHeaderSub();
+
+    if (localStorage.getItem('gh_token')) {
+      authed = true;
+      document.getElementById('authBtn').textContent = '\u2713 Logged in';
+      document.getElementById('addBtn').classList.remove('btn-hidden');
+      document.getElementById('toolbarDivider').style.display = 'block';
+    }
+
+    await loadEntries();
+  }
+
+  function updateHeaderSub() {
+    const week = currentWeek();
+    const sub  = document.getElementById('headerSub');
+    if (week <= TOTAL_WEEKS) {
+      sub.textContent = `week ${week} of ${TOTAL_WEEKS} \u2756 due 17 Nov 2026`;
+    } else {
+      sub.textContent = 'baby has arrived \u2756 due 17 Nov 2026';
+    }
+  }
+
+  // ── LOAD ──
+  async function loadEntries() {
+    try {
+      const headers = { 'Accept': 'application/vnd.github.v3+json' };
+      const token   = localStorage.getItem('gh_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res  = await fetch(API, { headers });
+      if (res.status === 404) {
+        // File doesn't exist yet — start empty
+        entries = [];
+        fileSha = '';
+      } else {
+        const json = await res.json();
+        fileSha  = json.sha;
+        entries  = JSON.parse(b64Decode(json.content));
+      }
+    } catch(e) {
+      entries = [];
+    }
+    renderTimeline();
+  }
+
+  // ── RENDER ──
+  function renderTimeline() {
+    const wrap  = document.getElementById('timelineWrap');
+    const week  = currentWeek();
+    wrap.innerHTML = '';
+
+    for (let w = 1; w <= TOTAL_WEEKS; w++) {
+      const weekEntries = entries.filter(e => e.week === w);
+      const isCurrent   = w === week;
+      const hasEntries  = weekEntries.length > 0;
+
+      const row = document.createElement('div');
+      row.className = 'week-row' +
+        (hasEntries ? ' has-entries' : '') +
+        (isCurrent  ? ' current-week' : '');
+
+      // Skip empty non-current weeks before current — just show dot, no content
+      const showFull = hasEntries || isCurrent || w >= week;
+
+      row.innerHTML = `
+        <div class="week-label">W${w}</div>
+        <div class="week-dot"></div>
+        <div class="week-header" onclick="openAddModalForWeek(${w})">
+          ${isCurrent ? '<span class="current-badge">you are here</span>' : ''}
+          <span class="week-date-range">${weekDateRange(w)}</span>
+          ${authed ? `<button class="week-add-btn" onclick="event.stopPropagation();openAddModalForWeek(${w})">+ add</button>` : ''}
+        </div>
+        <div class="week-entries" id="weekEntries${w}">
+          ${weekEntries.map(e => renderEntry(e)).join('')}
+        </div>
+      `;
+
+      wrap.appendChild(row);
+    }
+  }
+
+  function renderEntry(e) {
+    const imgUrl = e.image ? RAW_BASE + e.image : null;
+    return `
+      <div class="entry-card">
+        <div class="entry-actions${authed ? ' visible' : ''}">
+          <button class="entry-btn edit"   onclick="openEditEntry(${e.id})">Edit</button>
+          <button class="entry-btn delete" onclick="openDeleteEntry(${e.id})">Delete</button>
+        </div>
+        <div class="entry-header">
+          <div class="entry-title">${escHtml(e.title)}</div>
+          <div class="entry-date">${escHtml(e.date)}</div>
+        </div>
+        ${e.note  ? `<div class="entry-note">${escHtml(e.note)}</div>` : ''}
+        ${imgUrl  ? `<img class="entry-img" src="${imgUrl}" alt="entry image" onclick="openLightbox('${imgUrl}')" />` : ''}
+      </div>
+    `;
+  }
+
+  // ── AUTH ──
+  function openAuthModal() {
+    document.getElementById('tokenInput').value = localStorage.getItem('gh_token') || '';
+    showStatus('authStatus','','');
+    openModal('authModal');
+  }
+
+  async function authenticate() {
+    const token = document.getElementById('tokenInput').value.trim();
+    if (!token) return showStatus('authStatus','error','Please enter a token.');
+    showStatus('authStatus','','Checking\u2026');
+    try {
+      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Invalid token or no repo access.');
+      localStorage.setItem('gh_token', token);
+      authed = true;
+      document.getElementById('authBtn').textContent = '\u2713 Logged in';
+      document.getElementById('addBtn').classList.remove('btn-hidden');
+      document.getElementById('toolbarDivider').style.display = 'block';
+      closeModal('authModal');
+      renderTimeline();
+    } catch(e) {
+      showStatus('authStatus','error', e.message);
+    }
+  }
+
+  // ── WEEK SELECT ──
+  function buildWeekSelect(selected) {
+    const sel = document.getElementById('fWeek');
+    sel.innerHTML = '';
+    for (let w = 1; w <= TOTAL_WEEKS; w++) {
+      const o = document.createElement('option');
+      o.value = w;
+      o.textContent = `Week ${w} (${weekDateRange(w)})`;
+      if (w === selected) o.selected = true;
+      sel.appendChild(o);
+    }
+  }
+
+  // ── ADD / EDIT ──
+  function openAddModal() { openAddModalForWeek(currentWeek()); }
+
+  function openAddModalForWeek(week) {
+    editingId = null;
+    document.getElementById('entryModalTitle').textContent = 'Add Entry';
+    document.getElementById('fTitle').value = '';
+    document.getElementById('fNote').value  = '';
+    document.getElementById('fDate').value  = todayStr();
+    buildWeekSelect(week);
+    resetImage();
+    showStatus('entryStatus','','');
+    openModal('entryModal');
+  }
+
+  function openEditEntry(id) {
+    const entry = entries.find(e => e.id === id);
+    if (!entry) return;
+    editingId = id;
+    document.getElementById('entryModalTitle').textContent = 'Edit Entry';
+    document.getElementById('fTitle').value = entry.title;
+    document.getElementById('fNote').value  = entry.note  || '';
+    document.getElementById('fDate').value  = entry.date;
+    buildWeekSelect(entry.week);
+    resetImage();
+    if (entry.image) {
+      const preview = document.getElementById('imgPreview');
+      preview.src = RAW_BASE + entry.image;
+      preview.classList.add('visible');
+      document.getElementById('imgRemoveBtn').classList.add('visible');
+      pendingImagePath = entry.image;
+    }
+    showStatus('entryStatus','','');
+    openModal('entryModal');
+  }
+
+  async function saveEntry() {
+    const title = document.getElementById('fTitle').value.trim();
+    const note  = document.getElementById('fNote').value.trim();
+    const week  = parseInt(document.getElementById('fWeek').value);
+    const date  = document.getElementById('fDate').value.trim();
+
+    if (!title) return showStatus('entryStatus','error','Please enter a title.');
+
+    showStatus('entryStatus','','Saving\u2026');
+
+    let imagePath = pendingImagePath;
+    if (pendingImageBase64 && pendingImageMime) {
+      const ext      = pendingImageMime.split('/')[1].replace('jpeg','jpg');
+      const targetId = editingId !== null ? editingId : (entries.length > 0 ? Math.max(...entries.map(e => e.id)) + 1 : 1);
+      const filename = `images/timeline-${targetId}-${Date.now()}.${ext}`;
+      if (!await commitImage(filename, pendingImageBase64)) return;
+      imagePath = filename;
+    }
+
+    if (editingId !== null) {
+      const idx = entries.findIndex(e => e.id === editingId);
+      if (idx !== -1) entries[idx] = { ...entries[idx], title, note, week, date, image: imagePath || undefined };
+    } else {
+      const newId = entries.length > 0 ? Math.max(...entries.map(e => e.id)) + 1 : 1;
+      entries.push({ id: newId, title, note, week, date, image: imagePath || undefined });
+    }
+
+    const ok = await commitEntries('entryStatus');
+    if (ok) closeModal('entryModal');
+  }
+
+  // ── DELETE ──
+  function openDeleteEntry(id) {
+    deletingId = id;
+    showStatus('deleteStatus','','');
+    openModal('deleteModal');
+  }
+
+  async function confirmDelete() {
+    showStatus('deleteStatus','','Deleting\u2026');
+    entries = entries.filter(e => e.id !== deletingId);
+    const ok = await commitEntries('deleteStatus');
+    if (ok) closeModal('deleteModal');
+  }
+
+  // ── GITHUB ──
+  async function commitEntries(statusEl) {
+    try {
+      const body = { message: 'Update timeline', content: b64Encode(JSON.stringify(entries, null, 2)) };
+      if (fileSha) body.sha = fileSha;
+      const res = await fetch(API, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Commit failed.'); }
+      fileSha = (await res.json()).content.sha;
+      renderTimeline();
+      return true;
+    } catch(e) {
+      showStatus(statusEl,'error', e.message);
+      return false;
+    }
+  }
+
+  async function commitImage(filename, base64) {
+    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${filename}`;
+    try {
+      let sha;
+      try { const c = await fetch(url, { headers: ghHeaders() }); if (c.ok) sha = (await c.json()).sha; } catch(_) {}
+      const res = await fetch(url, {
+        method: 'PUT', headers: ghHeaders(),
+        body: JSON.stringify({ message: 'Add timeline image', content: base64, ...(sha && { sha }) })
+      });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Upload failed.'); }
+      return true;
+    } catch(e) {
+      showStatus('entryStatus','error', 'Image upload failed: ' + e.message);
+      return false;
+    }
+  }
+
+  // ── IMAGE ──
+  function resetImage() {
+    pendingImageBase64 = pendingImageMime = pendingImagePath = null;
+    document.getElementById('fImage').value = '';
+    const preview = document.getElementById('imgPreview');
+    preview.src = '';
+    preview.classList.remove('visible');
+    document.getElementById('imgRemoveBtn').classList.remove('visible');
+  }
+
+  function handleImageSelect(e) {
+    const file = e.target.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      pendingImageMime   = file.type;
+      pendingImageBase64 = ev.target.result.split(',')[1];
+      pendingImagePath   = null;
+      const preview = document.getElementById('imgPreview');
+      preview.src = ev.target.result;
+      preview.classList.add('visible');
+      document.getElementById('imgRemoveBtn').classList.add('visible');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeImage() { resetImage(); }
+
+  // ── LIGHTBOX ──
+  function openLightbox(url) {
+    document.getElementById('lightboxImg').src = url;
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightboxImg').src = '';
+  }
+
+  document.querySelectorAll('.modal-overlay').forEach(o =>
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
+  );
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+  init();
+</script>
+</body>
+</html>
