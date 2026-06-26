@@ -65,5 +65,16 @@
     ],
     "tag": "Health",
     "date": "18 Mar 2026"
+  },
+  {
+    "id": 6,
+    "title": "Don't shake the baby",
+    "points": [
+      "Seriously - DO NOT SHAKE THE BABY.",
+      "- this advice was given to me by a friendly man in a dark warehouse party"
+    ],
+    "tag": "Safety",
+    "date": "27 June 2026",
+    "image": "images/card-6-1782516868846.jpg"
   }
 ]
