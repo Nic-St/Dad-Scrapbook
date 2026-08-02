@@ -76,5 +76,15 @@
     "tag": "Safety",
     "date": "27 June 2026",
     "image": "images/card-6-1782516868846.jpg"
+  },
+  {
+    "id": 7,
+    "title": "The anxious generation book",
+    "points": [
+      "Book to explain phones negative impacts on children"
+    ],
+    "tag": "Health",
+    "date": "2 Aug 2026",
+    "image": "images/card-7-1785674476625.png"
   }
 ]
